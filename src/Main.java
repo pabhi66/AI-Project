@@ -16,20 +16,8 @@ public class Main {
      * @param args takes no arguments
      */
     public static void main(String[] args){
-        //*************************************************
-        //Ask user for training percentage
-        //this percentage will be used to train the classifier
-        //*************************************************
+
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter (1-100)% of data points that you want reserve for training ");
-        System.out.println("==========================================================");
-        System.out.print("Enter %: ");
-        int percent = scanner.nextInt();
-        while(percent <= 0 || percent > 100){
-            System.out.println("Illegal input. Please enter correct value from 1 - 100");
-            System.out.print("Enter %: ");
-            percent = scanner.nextInt();
-        }
 
         //*************************************************
         //Ask user, which classifier he/she wants to use
@@ -45,6 +33,21 @@ public class Main {
             System.out.println("Illegal selection. Please enter 1,2,or 3");
             System.out.print("Enter Classifier#: ");
             classifier = scanner.nextInt();
+        }
+
+
+        //*************************************************
+        //Ask user for training percentage
+        //this percentage will be used to train the classifier
+        //*************************************************
+        System.out.println("Enter (1-100)% of data points that you want reserve for training ");
+        System.out.println("==========================================================");
+        System.out.print("Enter %: ");
+        int percent = scanner.nextInt();
+        while(percent <= 0 || percent > 100){
+            System.out.println("Illegal input. Please enter correct value from 1 - 100");
+            System.out.print("Enter %: ");
+            percent = scanner.nextInt();
         }
 
         //*************************************************
@@ -127,18 +130,18 @@ public class Main {
         //*************************************************
         //Extract digit features of the digits
         //*************************************************
-        toFeatures(trainingDataDigit, 0);
-        toFeatures(validationDataDigit, 0);
-        toFeatures(testDataDigit, 0);
+        getFeatures(trainingDataDigit, 0);
+        getFeatures(validationDataDigit, 0);
+        getFeatures(testDataDigit, 0);
         int[] legalDigits = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 
         //*************************************************
         //Extract face features of the faces
         //*************************************************
-//        toFeatures(trainingDataImage, 1);
-//        toFeatures(validationDataImage, 1);
-//        toFeatures(testDataImage, 1);
+        getFeatures(trainingDataImage, 1);
+        getFeatures(validationDataImage, 1);
+        getFeatures(testDataImage, 1);
         int[] legalImages = new int[]{0, 1};
     }
 
@@ -198,14 +201,14 @@ public class Main {
                 //*************************************************
                 //Printing the image to see everything is printed correctly
                 //*************************************************
-                char[][] img = image.getPixels();
-                for (char[] anImg : img) {
-                    for (int l = 0; l < img[0].length; l++) {
-                        System.out.print(anImg[l]);
-                    }
-                    System.out.println("");
-                }
-                System.out.println("================");
+//                char[][] img = image.getPixels();
+//                for (char[] anImg : img) {
+//                    for (int l = 0; l < img[0].length; l++) {
+//                        System.out.print(anImg[l]);
+//                    }
+//                    System.out.println("");
+//                }
+//                System.out.println("================");
 
             }
             reader.close();
@@ -255,7 +258,7 @@ public class Main {
      * @return list of features extracted from the images
      */
     // convert the original Image type data to Feature that uses in the classifiers
-    private static List<Feature> toFeatures(List<Image> data, int type) {
+    private static List<Feature> getFeatures(List<Image> data, int type) {
         List<Feature> features = new ArrayList<>();
         for(Image image : data) {
             if(type == 0) {
