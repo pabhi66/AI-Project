@@ -11,6 +11,27 @@ import java.util.Scanner;
 public class Main {
 
 
+    private static int[] legalDigits = null;
+    private static int[] legalImages = null;
+    private static long start;
+    private static long end;
+    private static List<Feature> trainingFeaturesDigit = null;
+    private static List<Feature> validationFeaturesDigit = null;
+    private static List<Feature> testFeaturesDigit = null;
+
+    private static List<Feature> trainingFeaturesFace = null;
+    private static List<Feature> validationFeaturesFace = null;
+    private static List<Feature> testFeaturesFace = null;
+
+    private static List<Integer> testLabelsDigit = null;
+    private static List<Integer> trainingLabelsDigit = null;
+    private static List<Integer> validationLabelsDigit = null;
+
+    private static List<Integer> testLabelsImage = null;
+    private static List<Integer> trainingLabelsImage = null;
+    private static List<Integer> validationLabelsImage = null;
+
+
     /**
      * Main class that runs the program
      * @param args takes no arguments
@@ -22,7 +43,6 @@ public class Main {
         //*************************************************
         //Ask user, which classifier he/she wants to use
         //*************************************************
-        System.out.println("==========================================================");
         System.out.println("Please choose a Classifier (enter 1,2,or 3)");
         System.out.println("1) Perceptron Classifier");
         System.out.println("2) NaiveBayes Classifier");
@@ -40,8 +60,8 @@ public class Main {
         //Ask user for training percentage
         //this percentage will be used to train the classifier
         //*************************************************
-        System.out.println("Enter (1-100)% of data points that you want reserve for training ");
         System.out.println("==========================================================");
+        System.out.println("Enter (1-100)% of data points that you want reserve for training ");
         System.out.print("Enter %: ");
         int percent = scanner.nextInt();
         while(percent <= 0 || percent > 100){
@@ -113,9 +133,9 @@ public class Main {
         List<Image> testDataDigit = loadData("data/digitdata/testimages", 1000, 28, 28);
         List<Image> trainingDataDigit = loadData("data/digitdata/trainingimages", trainingDigit, 28, 28);
         List<Image> validationDataDigit = loadData("data/digitdata/validationimages", 1000, 28, 28);
-        List<Integer> testLabelsDigit = loadLabels("data/digitdata/testlabels", 1000);
-        List<Integer> trainingLabelsDigit = loadLabels("data/digitdata/traininglabels", trainingDigit);
-        List<Integer> validationLabelsDigit = loadLabels("data/digitdata/validationlabels", 1000);
+        testLabelsDigit = loadLabels("data/digitdata/testlabels", 1000);
+        trainingLabelsDigit = loadLabels("data/digitdata/traininglabels", trainingDigit);
+        validationLabelsDigit = loadLabels("data/digitdata/validationlabels", 1000);
 
         //*************************************************
         //Read face data and labels from the files
@@ -123,34 +143,80 @@ public class Main {
         List<Image> testDataImage = loadData("data/facedata/facedatatest", 150, 60, 70);
         List<Image> trainingDataImage = loadData("data/facedata/facedatatrain", trainingFace, 60, 70);
         List<Image> validationDataImage = loadData("data/facedata/facedatavalidation", 301, 60, 70);
-        List<Integer> testLabelsImage = loadLabels("data/facedata/facedatatestlabels", 150);
-        List<Integer> trainingLabelsImage = loadLabels("data/facedata/facedatatrainlabels", trainingFace);
-        List<Integer> validationLabelsImage = loadLabels("data/facedata/facedatavalidationlabels", 301);
+        testLabelsImage = loadLabels("data/facedata/facedatatestlabels", 150);
+        trainingLabelsImage = loadLabels("data/facedata/facedatatrainlabels", trainingFace);
+        validationLabelsImage = loadLabels("data/facedata/facedatavalidationlabels", 301);
 
         //*************************************************
         //Extract digit features of the digits
         //*************************************************
-        getFeatures(trainingDataDigit, 0);
-        getFeatures(validationDataDigit, 0);
-        getFeatures(testDataDigit, 0);
-        int[] legalDigits = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        trainingFeaturesDigit = getFeatures(trainingDataDigit, 0);
+        validationFeaturesDigit = getFeatures(validationDataDigit, 0);
+        testFeaturesDigit = getFeatures(testDataDigit, 0);
+        legalDigits = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 
         //*************************************************
         //Extract face features of the faces
         //*************************************************
-        getFeatures(trainingDataImage, 1);
-        getFeatures(validationDataImage, 1);
-        getFeatures(testDataImage, 1);
-        int[] legalImages = new int[]{0, 1};
+        trainingFeaturesFace = getFeatures(trainingDataImage, 1);
+        validationFeaturesFace = getFeatures(validationDataImage, 1);
+        testFeaturesFace = getFeatures(testDataImage, 1);
+        legalImages = new int[]{0, 1};
     }
 
     private static void runPerceptronClassifierDigit(){
+        System.out.println("======================================");
+        System.out.println("Running Perceptron Classifier on Digits");
+        Perceptron perceptron = new Perceptron(20, legalDigits);
+        start = System.currentTimeMillis();
+        perceptron.train(trainingFeaturesDigit,trainingLabelsDigit);
+        end = System.currentTimeMillis();
+        List<Integer> checkResult = perceptron.classify(testFeaturesDigit);
+
+
+        int errors = 0;
+        int totalImages = testLabelsDigit.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsDigit.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON DIGITS**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsDigit.size()) + " " );
+        System.out.println("Accurace: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
+        System.out.println("Number of Error: " + errors + " out of " + testLabelsDigit.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
+
 
     }
 
     private static void runPerceptronClassifierImage(){
+        System.out.println("======================================");
+        System.out.println("Running Perceptron Classifier on Faces");
+        Perceptron perceptron = new Perceptron(20, legalImages);
+        start = System.currentTimeMillis();
+        perceptron.train(trainingFeaturesFace,trainingLabelsImage);
+        end = System.currentTimeMillis();
+        List<Integer> checkResult = perceptron.classify(testFeaturesFace);
 
+
+        int errors = 0;
+        int totalImages = testLabelsImage.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsImage.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON Images**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
+        System.out.println("Accurace: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+        System.out.println("Number of Error: " + errors + " out of " + testLabelsImage.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
     }
 
     private static void runNaiveBayesClassifierDigit(){
