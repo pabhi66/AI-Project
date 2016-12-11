@@ -60,7 +60,7 @@ public class Image {
         Feature feature = new Feature(HEIGHT, WIDTH);
         for(int i = 0; i < HEIGHT; i++) {
             for(int j = 0; j < WIDTH; j++) {
-                if(getPixel(i,j) == '#') {
+                if(getPixel(i,j) == '#' || getPixel(i,j) == '+') {
                     feature.setFeature(i, j, 1);
                 } else {
                     feature.setFeature(i, j, 0);
