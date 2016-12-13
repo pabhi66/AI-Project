@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -219,11 +222,34 @@ public class Main {
         System.out.println("Total training time: " + (end - start) + "ms");
     }
 
-    private static void runNaiveBayesClassifierDigit(){
+    private static void runNaiveBayesClassifierImage(){
+    	System.out.println("======================================");
+        System.out.println("Running Naive Bayes Classifier on Faces");
+        NaiveBayesClassifier bayes = new  NaiveBayesClassifier(IntStream.of(legalImages).boxed().collect(Collectors.toList()));
+        start = System.currentTimeMillis();
+        bayes.train(trainingFeaturesFace, trainingLabelsImage, validationFeaturesFace, validationLabelsImage);
+        end = System.currentTimeMillis();
+//        List<Integer> checkResult = perceptron.classify(testFeaturesFace);
+//
+//
+//        int errors = 0;
+//        int totalImages = testLabelsImage.size();
+//
+//        for(int i = 0; i < checkResult.size(); i++){
+//            int result = checkResult.get(i);
+//            if(result != testLabelsImage.get(i))
+//                errors++;
+//        }
+//
+//        System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON Images**");
+//        System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
+//        System.out.println("Accurace: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+//        System.out.println("Number of Error: " + errors + " out of " + testLabelsImage.size());
+//        System.out.println("Total training time: " + (end - start) + "ms");
 
     }
 
-    private static void runNaiveBayesClassifierImage(){
+    private static void runNaiveBayesClassifierDigit(){
 
     }
 
