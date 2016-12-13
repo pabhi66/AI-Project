@@ -48,7 +48,7 @@ public class Main {
         //*************************************************
         System.out.println("Please choose a Classifier (enter 1,2,or 3)");
         System.out.println("1) Perceptron Classifier");
-        System.out.println("2) NaiveBayes Classifier");
+        System.out.println("2) Naive Bayes Classifier");
         System.out.println("3) custom Classifier");
         System.out.print("Enter Classifier#: ");
         int classifier = scanner.nextInt();
@@ -189,8 +189,8 @@ public class Main {
 
         System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON DIGITS**");
         System.out.println("Error rate: " + ((double) errors/testLabelsDigit.size()) + " " );
-        System.out.println("Accurace: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
-        System.out.println("Number of Error: " + errors + " out of " + testLabelsDigit.size());
+        System.out.println("Accuracy: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsDigit.size());
         System.out.println("Total training time: " + (end - start) + "ms");
 
 
@@ -217,8 +217,8 @@ public class Main {
 
         System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON Images**");
         System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
-        System.out.println("Accurace: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
-        System.out.println("Number of Error: " + errors + " out of " + testLabelsImage.size());
+        System.out.println("Accuracy: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsImage.size());
         System.out.println("Total training time: " + (end - start) + "ms");
     }
 
@@ -229,27 +229,50 @@ public class Main {
         start = System.currentTimeMillis();
         bayes.train(trainingFeaturesFace, trainingLabelsImage, validationFeaturesFace, validationLabelsImage);
         end = System.currentTimeMillis();
-//        List<Integer> checkResult = perceptron.classify(testFeaturesFace);
-//
-//
-//        int errors = 0;
-//        int totalImages = testLabelsImage.size();
-//
-//        for(int i = 0; i < checkResult.size(); i++){
-//            int result = checkResult.get(i);
-//            if(result != testLabelsImage.get(i))
-//                errors++;
-//        }
-//
-//        System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON Images**");
-//        System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
-//        System.out.println("Accurace: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
-//        System.out.println("Number of Error: " + errors + " out of " + testLabelsImage.size());
-//        System.out.println("Total training time: " + (end - start) + "ms");
+        List<Integer> checkResult = bayes.classify(testFeaturesFace);
+
+
+        int errors = 0;
+        int totalImages = testLabelsImage.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsImage.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF BAYES CLASSIFIER ON Images**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
+        System.out.println("Accuracy: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsImage.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
 
     }
 
     private static void runNaiveBayesClassifierDigit(){
+    	System.out.println("======================================");
+        System.out.println("Running Naive Bayes Classifier on Digits");
+        NaiveBayesClassifier bayes = new  NaiveBayesClassifier(IntStream.of(legalDigits).boxed().collect(Collectors.toList()));
+        start = System.currentTimeMillis();
+        bayes.train(trainingFeaturesDigit, trainingLabelsDigit, validationFeaturesDigit, validationLabelsDigit);
+        end = System.currentTimeMillis();
+        List<Integer> checkResult = bayes.classify(testFeaturesDigit);
+
+
+        int errors = 0;
+        int totalImages = testLabelsDigit.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsDigit.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF BAYES CLASSIFIER ON Digits**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsDigit.size()) + " " );
+        System.out.println("Accuracy: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsDigit.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
 
     }
 
