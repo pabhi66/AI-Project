@@ -49,13 +49,22 @@ public class Main {
         System.out.println("Please choose a Classifier (enter 1,2,or 3)");
         System.out.println("1) Perceptron Classifier");
         System.out.println("2) NaiveBayes Classifier");
-        System.out.println("3) custom Classifier");
+        System.out.println("3) KNN Classifier");
         System.out.print("Enter Classifier#: ");
         int classifier = scanner.nextInt();
         while(classifier < 0 || classifier > 3){
             System.out.println("Illegal selection. Please enter 1,2,or 3");
             System.out.print("Enter Classifier#: ");
             classifier = scanner.nextInt();
+        }
+        int k=-1;
+        if(classifier == 3){
+            System.out.println("Please enter (1-100)% of neighbors to use");
+            k = scanner.nextInt();
+            while(k <= 0 || k > 100){
+                System.out.println("Illegal entry. Please enter from 1-100");
+                k = scanner.nextInt();
+            }
         }
 
 
@@ -83,7 +92,7 @@ public class Main {
         //*************************************************
         //Run the classifier based on user input
         //*************************************************
-        runClassifiers(classifier, trainingDigitPercent, trainingFacePercent);
+        runClassifiers(classifier, trainingDigitPercent, trainingFacePercent,k);
     }
 
     /**
@@ -92,7 +101,7 @@ public class Main {
      * @param trainingDigitPercent training percentage of digits
      * @param trainingFacePercent training percentage of faces
      */
-    private static void runClassifiers(int classifier, int trainingDigitPercent, int trainingFacePercent){
+    private static void runClassifiers(int classifier, int trainingDigitPercent, int trainingFacePercent, int k){
 
         //*************************************************
         //Read all the data from the files and extract the features
@@ -117,8 +126,8 @@ public class Main {
         //Run __________ Classifier
         //*************************************************
         else if(classifier == 3){
-            run________Digit();
-            run________Image();
+            runKNNDigit(k);
+            runKNNImage(k);
         }
 
 
@@ -250,10 +259,10 @@ public class Main {
 
     }
 
-    private static void run________Digit(){
+    private static void runKNNDigit(int k){
 
     }
-    private static void run________Image(){
+    private static void runKNNImage(int k){
 
     }
 
