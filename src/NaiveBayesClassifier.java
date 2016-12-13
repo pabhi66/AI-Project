@@ -1,14 +1,14 @@
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
-
-import com.sun.javafx.geom.Vec2d;
 
 public class NaiveBayesClassifier {
 
 	List<Integer> legalLabels;
 	String type;
+	List<Double> p_y;
+	Vector<Vector<Vector<Double>>> p_F_given_y;
 	// k to be used for smoothing, set to 1 initially
 	double k;
 
@@ -26,6 +26,7 @@ public class NaiveBayesClassifier {
 		this.type = "naivebayes";
 		this.k = 1.0;
 		this.automaticTuning = false;
+
 	}
 
 	/**
@@ -49,8 +50,8 @@ public class NaiveBayesClassifier {
 	public void train(List<Feature> trainingFeatures, List<Integer> trainingLabels, List<Feature> validationFeatures,
 			List<Integer> validationLabels) {
 		List<Double> kgrid = new ArrayList<Double>();
-		
-		if(automaticTuning){
+
+		if (automaticTuning) {
 			kgrid.add(0.001);
 			kgrid.add(0.05);
 			kgrid.add(0.1);
@@ -60,30 +61,31 @@ public class NaiveBayesClassifier {
 			kgrid.add(10.0);
 			kgrid.add(20.0);
 			kgrid.add(50.0);
-		}
-		else{
+		} else {
 			kgrid.add(k);
 		}
 		trainAndTune(trainingFeatures, trainingLabels, validationFeatures, validationLabels, kgrid);
 	}
 
-	public void trainAndTune(List<Feature> trainingFeatures, List<Integer> trainingLabels, List<Feature> validationFeatures,
-			List<Integer> validationLabels, List<Double> kgrid) {
+	public void trainAndTune(List<Feature> trainingFeatures, List<Integer> trainingLabels,
+			List<Feature> validationFeatures, List<Integer> validationLabels, List<Double> kgrid) {
 
-		//Get P(Y): prior distribution over labels
-		List<Double> p_y = getPriorDistribution(trainingLabels);
+		// Get P(Y): prior distribution over labels
+		p_y = getPriorDistribution(trainingLabels);
+
+		// Get distribution of features given labels for each label
+		p_F_given_y = getDistributionOfFeaturesGivenLabel(trainingFeatures, trainingLabels);
+
+		int answer = legalLabels.stream().max(Comparator.comparing(y->calculateLogJointProbabilities(y))).get();
 		
-		//Get distribution of features given labels for each label
-		Vector<Vector<Vector<Double>>> p_F_given_y = getDistributionOfFeaturesGivenLabel(trainingFeatures, trainingLabels);
-		
-		//PRINT OUT PRIOR DISTRIBUTION & FEATURES 
-		for(Double i:p_y){
+		// PRINT OUT PRIOR DISTRIBUTION & FEATURES
+		for (Double i : p_y) {
 			System.out.println(i);
 		}
-		for(Vector<Vector<Double>> grid: p_F_given_y){
-			for(Vector<Double> row: grid){
-				for(Double d :row){
-					System.out.print(d.doubleValue()+ "     ");
+		for (Vector<Vector<Double>> grid : p_F_given_y) {
+			for (Vector<Double> row : grid) {
+				for (Double d : row) {
+					System.out.print(d.doubleValue() + "     ");
 				}
 				System.out.println();
 			}
@@ -94,34 +96,33 @@ public class NaiveBayesClassifier {
 		}
 	}
 
-	
 	private List<Double> getPriorDistribution(List<Integer> trainingLabels) {
 		List<Double> result = new ArrayList<Double>();
-		
-		for(int i=0;i<legalLabels.size();++i){
+
+		for (int i = 0; i < legalLabels.size(); ++i) {
 			result.add(0.0);
 		}
-		
-		for(int i = 0;i<trainingLabels.size(); ++i)
-		{
-			result.set(trainingLabels.get(i), result.get(trainingLabels.get(i))+1.0);
+
+		for (int i = 0; i < trainingLabels.size(); ++i) {
+			result.set(trainingLabels.get(i), result.get(trainingLabels.get(i)) + 1.0);
 		}
-		for(int i =0; i<result.size();++i){
-			result.set(i, result.get(i)/trainingLabels.size());
+		for (int i = 0; i < result.size(); ++i) {
+			result.set(i, result.get(i) / trainingLabels.size());
 		}
 		return result;
 	}
-	
-	private Vector<Vector<Vector<Double>>> getDistributionOfFeaturesGivenLabel(List<Feature> features, List<Integer> labels){
+
+	private Vector<Vector<Vector<Double>>> getDistributionOfFeaturesGivenLabel(List<Feature> features,
+			List<Integer> labels, double smoothing) {
 		Vector<Vector<Vector<Double>>> result = new Vector<Vector<Vector<Double>>>();
 		for (int labelvalue : legalLabels) {
 			Vector<Vector<Double>> grid = new Vector<Vector<Double>>();
-			//for each feature we find the probability it is 1 given the label
+			// for each feature we find the probability it is 1 given the label
 			for (int i = 0; i < features.get(0).getHeight(); ++i) {
 				Vector<Double> row = new Vector<Double>();
 				for (int j = 0; j < features.get(0).getWidth(); ++j) {
 					int c_f_i_y = 0, c_f_prime_i_y = 0;
-					//distribution of feature[i][j]
+					// distribution of feature[i][j]
 					for (int k = 0; k < features.size(); ++k) {
 
 						if (labels.get(k) != labelvalue)
@@ -131,12 +132,28 @@ public class NaiveBayesClassifier {
 						if (Fi.getFeature(i, j) == 1) {
 							c_f_i_y++;
 						}
+						c_f_prime_i_y += smoothing;
 					}
-					row.add(c_f_i_y * 1.0 / c_f_prime_i_y);
+					row.add((c_f_i_y + smoothing) * 1.0 / c_f_prime_i_y);
 				}
 				grid.addElement(row);
 			}
 			result.add(grid);
+		}
+		return result;
+	}
+
+	private List<Double> calculateLogJointProbabilities() {
+		List<Double> result = new ArrayList<Double>();
+		for (int y = 0; y < legalLabels.size(); y++) {
+			double a = Math.log(p_y.get(y));
+			double b = 0.0;
+			for (int i = 0; i < p_F_given_y.get(y).size(); ++i) {
+				for (Double d : p_F_given_y.get(y).get(i)) {
+					b += Math.log(d);
+				}
+			}
+			result.add(a + b);
 		}
 		return result;
 	}
