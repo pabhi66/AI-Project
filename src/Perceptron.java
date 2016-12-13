@@ -29,12 +29,16 @@ class Perceptron {
 
     /**
      * set height, width, and length of an image
+     * it keeps a weight vector $w^y$ of each class $y$ ($y$ is an identifier, not an exponent).
      * @param width width
      * @param length length
      * @param height height
      */
     private void setWeights(int width, int length, int height){
+        //create a new image weight with given height, weight, and length(label size)
         imageWeight = new double[height][width][length];
+
+        //generate random number and set the random value
         Random random = new Random();
         for(int y = 0; y < length; y++) {
             for(int i = 0; i < height; i++) {
@@ -47,6 +51,14 @@ class Perceptron {
 
     /**
      * train the faces or digits given train data
+     * In the basic multi-class perceptron, we scan over the data, one instance at a time. When we come to an instance $(f, y)$, we find the label with highest score:
+     * We compare $y'$ to the true label $y$.
+     * If $y' = y$, we've gotten the instance correct, and we do nothing.
+     * Otherwise, we guessed $y'$ but we should have guessed $y$.
+     * That means that $w^y$ should have scored $f$ higher, and $w^{y'}$ should have scored $f$ lower,
+     * in order to prevent this error in the future. We update these two weight vectors accordingly:
+     *    w^y += f
+     *    w^{y'} -= f
      * @param trainingData train data
      * @param trainingLabels train labels
      */
@@ -91,6 +103,7 @@ class Perceptron {
     /**
      * Classifies each image as the label that most closely matches the prototype vector
      * for that label.  See the project description for details.
+     * Given a feature list , the perceptron compute the class of labels whose weight vector is most similar to the input vector $f$
      */
     List<Integer> classify(List<Feature> data){
         List<Integer> guesses = new ArrayList<>();
@@ -103,6 +116,12 @@ class Perceptron {
 
     /**
      * calculate the accuracy of the feature
+     * given a feature vector $f$ (in our case, a map from pixel locations to indicators of whether they are on), we score each class with:
+     *
+     *
+     *  {score}(f,y) = sum of  f_i w^y_i
+     *
+     *Then we choose the class with highest score as the predicted label for that data instance.
      * @param feature feature of an image
      */
     private void calculateScores(Feature feature) {
@@ -117,7 +136,7 @@ class Perceptron {
     }
 
     /**
-     * Returns a list of the 100 features with the greatest weight for some label
+     * Returns features with the greatest weight for some label
      */
     private int findHeightWeightFeatures(double[] array){
         int maxIndex = 0;
