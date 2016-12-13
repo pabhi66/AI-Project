@@ -49,13 +49,22 @@ public class Main {
         System.out.println("Please choose a Classifier (enter 1,2,or 3)");
         System.out.println("1) Perceptron Classifier");
         System.out.println("2) Naive Bayes Classifier");
-        System.out.println("3) custom Classifier");
+        System.out.println("3) KNN Classifier");
         System.out.print("Enter Classifier#: ");
         int classifier = scanner.nextInt();
         while(classifier < 0 || classifier > 3){
             System.out.println("Illegal selection. Please enter 1,2,or 3");
             System.out.print("Enter Classifier#: ");
             classifier = scanner.nextInt();
+        }
+        int k=-1;
+        if(classifier == 3){
+            System.out.println("Please enter (1-100)% of neighbors to use");
+            k = scanner.nextInt();
+            while(k <= 0 || k > 100){
+                System.out.println("Illegal entry. Please enter from 1-100");
+                k = scanner.nextInt();
+            }
         }
 
 
@@ -83,7 +92,7 @@ public class Main {
         //*************************************************
         //Run the classifier based on user input
         //*************************************************
-        runClassifiers(classifier, trainingDigitPercent, trainingFacePercent);
+        runClassifiers(classifier, trainingDigitPercent, trainingFacePercent,k);
     }
 
     /**
@@ -92,7 +101,7 @@ public class Main {
      * @param trainingDigitPercent training percentage of digits
      * @param trainingFacePercent training percentage of faces
      */
-    private static void runClassifiers(int classifier, int trainingDigitPercent, int trainingFacePercent){
+    private static void runClassifiers(int classifier, int trainingDigitPercent, int trainingFacePercent, int k){
 
         //*************************************************
         //Read all the data from the files and extract the features
@@ -117,8 +126,8 @@ public class Main {
         //Run __________ Classifier
         //*************************************************
         else if(classifier == 3){
-            run________Digit();
-            run________Image();
+            runKNNDigit(k);
+            runKNNImage(k);
         }
 
 
@@ -171,7 +180,7 @@ public class Main {
     private static void runPerceptronClassifierDigit(){
         System.out.println("======================================");
         System.out.println("Running Perceptron Classifier on Digits");
-        Perceptron perceptron = new Perceptron(20, legalDigits);
+        Perceptron perceptron = new Perceptron(legalDigits);
         start = System.currentTimeMillis();
         perceptron.train(trainingFeaturesDigit,trainingLabelsDigit);
         end = System.currentTimeMillis();
@@ -199,7 +208,7 @@ public class Main {
     private static void runPerceptronClassifierImage(){
         System.out.println("======================================");
         System.out.println("Running Perceptron Classifier on Faces");
-        Perceptron perceptron = new Perceptron(20, legalImages);
+        Perceptron perceptron = new Perceptron(legalImages);
         start = System.currentTimeMillis();
         perceptron.train(trainingFeaturesFace,trainingLabelsImage);
         end = System.currentTimeMillis();
@@ -207,8 +216,6 @@ public class Main {
 
 
         int errors = 0;
-        int totalImages = testLabelsImage.size();
-
         for(int i = 0; i < checkResult.size(); i++){
             int result = checkResult.get(i);
             if(result != testLabelsImage.get(i))
@@ -246,7 +253,6 @@ public class Main {
         System.out.println("Accuracy: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
         System.out.println("Number of Errors: " + errors + " out of " + testLabelsImage.size());
         System.out.println("Total training time: " + (end - start) + "ms");
-
     }
 
     private static void runNaiveBayesClassifierDigit(){
@@ -276,10 +282,10 @@ public class Main {
 
     }
 
-    private static void run________Digit(){
+    private static void runKNNDigit(int k){
 
     }
-    private static void run________Image(){
+    private static void runKNNImage(int k){
 
     }
 
