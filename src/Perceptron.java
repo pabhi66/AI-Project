@@ -7,18 +7,15 @@ import java.util.Random;
  * Run Perceptron algorithm on faces and digits
  */
 class Perceptron {
-    private int maxIterations; //number of iterations perceptron does
     private int[] legalLabels; //legal face or digit values (0,1 for face) (0....9 for digits)
-    private double[] weights; //legal lable weight
-    private double[][][] imageWeight; //height, width, and legale labels for each weight
+    private double[] weights; //legal label weight/value
+    private double[][][] imageWeight; //height, width, and legal labels for each image
 
     /**
      * perceptron constructor
-     * @param maxIterations number of iterations Default = 20
      * @param legalLabels legal labels
      */
-    Perceptron(int maxIterations, int[] legalLabels){
-        this.maxIterations = maxIterations;
+    Perceptron(int[] legalLabels){
         this.legalLabels = legalLabels;
         setWeights();
     }
@@ -36,7 +33,7 @@ class Perceptron {
      * @param length length
      * @param height height
      */
-    private void initWeights(int width, int length, int height){
+    private void setWeights(int width, int length, int height){
         imageWeight = new double[height][width][length];
         Random random = new Random();
         for(int y = 0; y < length; y++) {
@@ -54,15 +51,31 @@ class Perceptron {
      * @param trainingLabels train labels
      */
     void train(List<Feature> trainingData, List<Integer> trainingLabels){
-        int height = trainingData.get(0).getHeight();
-        int width = trainingData.get(0).getWidth();
+        //initialize length, width, and height
         int length = legalLabels.length;
-        initWeights(width, length, height);
+        int width = trainingData.get(0).getWidth();
+        int height = trainingData.get(0).getHeight();
+
+        //set the length, width, and height for all images
+        setWeights(width, length, height);
+
+        //maximum iterations to do in perceptron, can change it to do more
+        int maxIterations = 20;
+
+        //do iterations and learn the images
         for(int i = 0; i < maxIterations; i++) {
             for(int j = 0; j < trainingData.size(); j++) {
+
+                //learn from training data
                 calculateScores(trainingData.get(j));
+
+                //get prediction
                 int prediction = findHeightWeightFeatures(weights);
+
+                //get the true value
                 int truth = trainingLabels.get(j);
+
+                //if prediction is not true then adjust truth and prediction data of an pixel
                 if(prediction != truth) {
                     for(int h = 0; h < height; h++) {
                         for(int w = 0; w < width; w++) {
@@ -76,7 +89,7 @@ class Perceptron {
     }
 
     /**
-     * Classifies each datum as the label that most closely matches the prototype vector
+     * Classifies each image as the label that most closely matches the prototype vector
      * for that label.  See the project description for details.
      */
     List<Integer> classify(List<Feature> data){

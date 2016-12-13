@@ -171,7 +171,7 @@ public class Main {
     private static void runPerceptronClassifierDigit(){
         System.out.println("======================================");
         System.out.println("Running Perceptron Classifier on Digits");
-        Perceptron perceptron = new Perceptron(20, legalDigits);
+        Perceptron perceptron = new Perceptron(legalDigits);
         start = System.currentTimeMillis();
         perceptron.train(trainingFeaturesDigit,trainingLabelsDigit);
         end = System.currentTimeMillis();
@@ -189,7 +189,7 @@ public class Main {
 
         System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON DIGITS**");
         System.out.println("Error rate: " + ((double) errors/testLabelsDigit.size()) + " " );
-        System.out.println("Accurace: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
+        System.out.println("Accuracy: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
         System.out.println("Number of Error: " + errors + " out of " + testLabelsDigit.size());
         System.out.println("Total training time: " + (end - start) + "ms");
 
@@ -199,7 +199,7 @@ public class Main {
     private static void runPerceptronClassifierImage(){
         System.out.println("======================================");
         System.out.println("Running Perceptron Classifier on Faces");
-        Perceptron perceptron = new Perceptron(20, legalImages);
+        Perceptron perceptron = new Perceptron(legalImages);
         start = System.currentTimeMillis();
         perceptron.train(trainingFeaturesFace,trainingLabelsImage);
         end = System.currentTimeMillis();
@@ -207,8 +207,6 @@ public class Main {
 
 
         int errors = 0;
-        int totalImages = testLabelsImage.size();
-
         for(int i = 0; i < checkResult.size(); i++){
             int result = checkResult.get(i);
             if(result != testLabelsImage.get(i))
@@ -217,7 +215,7 @@ public class Main {
 
         System.out.println("**RESULT OF PERCEPTRON CLASSIFIER ON Images**");
         System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
-        System.out.println("Accurace: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+        System.out.println("Accuracy: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
         System.out.println("Number of Error: " + errors + " out of " + testLabelsImage.size());
         System.out.println("Total training time: " + (end - start) + "ms");
     }
@@ -233,7 +231,6 @@ public class Main {
 //
 //
 //        int errors = 0;
-//        int totalImages = testLabelsImage.size();
 //
 //        for(int i = 0; i < checkResult.size(); i++){
 //            int result = checkResult.get(i);
