@@ -107,8 +107,8 @@ class Perceptron {
      */
     List<Integer> classify(List<Feature> data){
         List<Integer> guesses = new ArrayList<>();
-        for(Feature datum : data) {
-            calculateScores(datum);
+        for(Feature images : data) {
+            calculateScores(images);
             guesses.add(findHeightWeightFeatures(weights));
         }
         return guesses;
