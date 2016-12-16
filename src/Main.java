@@ -1,11 +1,8 @@
-import com.sun.scenario.effect.ImageData;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -283,10 +280,55 @@ public class Main {
     }
 
     private static void runKNNDigit(int k){
+    	System.out.println("======================================");
+        System.out.println("Running K Nearest Neighbors Classifier on Digits");
+        KNN knn = new KNN(legalDigits,k);
+        start = System.currentTimeMillis();
+        knn.train(trainingFeaturesDigit, trainingLabelsDigit);
+        end = System.currentTimeMillis();
+        List<Integer> checkResult = knn.classify(testFeaturesDigit);
+
+
+        int errors = 0;
+        int totalImages = testLabelsDigit.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsDigit.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF KNN CLASSIFIER ON Digits**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsDigit.size()) + " " );
+        System.out.println("Accuracy: " + ((double) (testLabelsDigit.size() - errors) / testLabelsDigit.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsDigit.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
 
     }
     private static void runKNNImage(int k){
+    	System.out.println("======================================");
+        System.out.println("Running K Nearest Neighbors Classifier on Faces");
+        KNN knn = new  KNN(legalImages, k);
+        start = System.currentTimeMillis();
+        knn.train(trainingFeaturesFace, trainingLabelsImage);
+        end = System.currentTimeMillis();
+        List<Integer> checkResult = knn.classify(testFeaturesFace);
 
+
+        int errors = 0;
+        int totalImages = testLabelsImage.size();
+
+        for(int i = 0; i < checkResult.size(); i++){
+            int result = checkResult.get(i);
+            if(result != testLabelsImage.get(i))
+                errors++;
+        }
+
+        System.out.println("**RESULT OF K Nearest Neighbors CLASSIFIER ON Images**");
+        System.out.println("Error rate: " + ((double) errors/testLabelsImage.size()) + " " );
+        System.out.println("Accuracy: " + ((double) (testLabelsImage.size() - errors) / testLabelsImage.size() ));
+        System.out.println("Number of Errors: " + errors + " out of " + testLabelsImage.size());
+        System.out.println("Total training time: " + (end - start) + "ms");
     }
 
     /**
