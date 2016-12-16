@@ -41,7 +41,7 @@ Then we classify the result using test data to find the accuracy of an algorithm
         then we use the classify the train result using test data comparing and calculating joint probability of the feature and its value.
         
         \item \textbf{K Nearest Neighbors Algorithm} \\
-        \qquad In KNN we classify image by vote of the majority of K neighbors. K neighbors are measured using the distance function.  $\sum_{i=1}^k |X_i-Y_i|$.  And if K = 1 then the case is simply assigned to the class of its nearest neighbor.  We choose the best value of K by inspecting the data.Then we use test lebels to classify our results. 
+        \qquad In KNN we classify image by vote of the majority of K neighbors. K neighbors are measured using the distance function.  $\sum_{i=1}^k |X_i-Y_i|$.  And if K = 1 then the case is simply assigned to the class of its nearest neighbor.  We choose the best value of K by inspecting the data.  And the training phase only consists of storing feature vectors and class labels.  Then we use test lebels to classify our results. 
     \end{itemize}
     
         
@@ -51,7 +51,7 @@ Then we classify the result using test data to find the accuracy of an algorithm
         
 \section{Result}
    
-        When we use only 10\% of the training data the algorithms learns less and its accuracy is less then what we get if we use 100\% of the data.  I have given few results from our algorithm to see the what different results we get if we use 10\% of the training data and 100\% of the training data.  When we use 100\% of the train data, the algorithm learns well and identifies the images more accurately.  However, the training time does increases when we use more data.\\
+        When we use only 10\% of the training data the algorithms learns less and its accuracy is less then what we get if we use 100\% of the data.  I have given few results from our algorithm to see the what different results we get if we use 10\% of the training data and 100\% of the training data.  When we use 100\% of the train data, the algorithm learns well and identifies the images more accurately.  However, the training time does increases when we use more data.  However for the KNN algorithm on digits we need to keep the k low for some reason to get 70\% accuracy, and on faces it gives 50\% on most cases because the features for the faces are too thin and detailed to give a good result in KNN.\\
         
         
         
